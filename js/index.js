@@ -16,7 +16,7 @@ window.addEventListener('load', function load() {
 
     // cap vel and acc
     circle.acc.limit(4);
-    circle.vel.limit(5);
+    circle.vel.limit(10);
 
     const gravity = new Vector(0, 0.01);
 
@@ -46,11 +46,12 @@ window.addEventListener('load', function load() {
             pos: { y },
         } = circle;
 
-        if (y >= height) {
-            circle.vel.setMag(0.0001);
-            circle.acc.setMag(0.0001);
-        } else if (y + r >= height) {
+        if (y + r >= height) {
             circle.vel.reverse();
+        }
+
+        if (y  >= height) {
+            circle.pos = new Vector(width / 2, height / 2);
         }
     }
 
@@ -60,7 +61,7 @@ window.addEventListener('load', function load() {
         drag.normalize();
         drag.reverse();
 
-        let c = 0.001;
+        let c = 0.005;
         let speed = vel.magSq();
 
         drag.setMag(c * speed);
