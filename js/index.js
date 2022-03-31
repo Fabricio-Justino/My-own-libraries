@@ -1,24 +1,32 @@
 import DrawWork from './DrawWork.js';
+import { Shapes } from './DrawWork.js';
 import Vector from './Vector.js';
+import Effects from './Effects.js';
 
 //initialize DOMS elements
 window.addEventListener('load', function load() {
+    canvasAnimation();
+
+    const $nav = Effects.$('nav.navigator');
+
+    //$nav.slideDown();
+
+    setTimeout(() => {
+        $nav.slideUp();
+    }, 2000);
+});
+
+function canvasAnimation() {
     const $canvasDemostration = document.getElementById('canvas-demostration');
 
     const engine = DrawWork.createCanvas($canvasDemostration, null, null);
+   
     const { width, height } = engine;
-    const circle = {
-        pos: new Vector(width / 2, height / 2),
-        vel: new Vector(0, 1),
-        acc: new Vector(0, 0.1),
-        r: 50,
-    };
 
     // cap vel and acc
-    circle.acc.limit(4);
-    circle.vel.limit(10);
+    const circle = Shapes.vectorCircle(width / 2, 20, 20);
 
-    const gravity = new Vector(0, 0.01);
+    const gravity = new Vector(0, 0.1);
 
     // renderize objects using animationFrame
     engine.draw(loop);
@@ -26,50 +34,71 @@ window.addEventListener('load', function load() {
     // callback to draw
     function loop() {
         engine.backGround(0, 0, 0);
-        render(circle);
+        engine.renderVectorCirlce(circle, 'white', 'red');
         update(circle);
     }
 
     // movement to object
     function update(circle) {
-        circle.acc.add(gravity);
-        applyDragForce(circle);
-        circle.vel.add(circle.acc);
-        circle.pos.add(circle.vel);
+        circle.applyForce(gravity);
+        circle.applyForce(dragForce(circle.vel.copy(), 0.001));
+        circle.applyForce(windForce(circle));
+        circle.update();
         rebound(circle);
     }
 
     // colision
     function rebound(circle) {
         let {
-            r,
-            pos: { y },
+            radius: r,
+            pos: { y, x },
         } = circle;
 
         if (y + r >= height) {
-            circle.vel.reverse();
+            circle.pos.y = height - r;
+            circle.vel.y *= -1;
         }
 
-        if (y  >= height) {
-            circle.pos = new Vector(width / 2, height / 2);
+        if (y - r <= 0) {
+            circle.pos.y = r;
+            circle.vel.y *= -1;
+        } 
+
+        if(x + r >= width){
+            circle.pos.x = width-r;
+            circle.vel.x *= -1; 
+        }
+
+        if(x - r <= 0) {
+            circle.pos.x = r;
+            circle.vel.x *= -1;
         }
     }
 
     // appling drag force
-    function applyDragForce({ vel, acc }) {
-        let drag = vel.copy();
+    function dragForce(vectorSpeed, airResistence = 0.1) {
+        let drag = vectorSpeed.copy();
         drag.normalize();
         drag.reverse();
 
-        let c = 0.005;
-        let speed = vel.magSq();
+        let c = airResistence;
+        let speed = vectorSpeed.magSq();
 
         drag.setMag(c * speed);
 
-        acc.add(drag);
+        return drag;
     }
 
-    function render({ r, pos: { x, y } }) {
-        engine.strokedDot(x, y, r, 'white', 'red');
+    //aplling wind force
+    function windForce({pos}) {
+        const v = new Vector();
+        if(engine.mouseIsPressed) {
+            const mousePos = new Vector(engine.mouseX, engine.mouseY);
+            const pointer = Vector.sub(mousePos, pos);
+            pointer.setMag(1);
+            v.add(pointer);
+        }
+
+        return v;
     }
-});
+}

@@ -130,15 +130,18 @@ export default class Vector {
     }
 
     normalize() {
-        let xn = this.x / this.mag();
-        let yn = this.y / this.mag();
-        this.x = xn;
-        this.y = yn;
+        const len = this.mag();
+        if (len !== 0) this.mult(1 / len);
         return this;
     }
 
     heading() {
         return Math.atan2(this.y, this.x);
+    }
+
+    set(x, y) {
+        this.x = x;
+        this.y = y;
     }
 
     setHeading(radian) {

@@ -1,6 +1,4 @@
-/*import {
-    Vector
-} from "./Vector.js";*/
+import Vector from './Vector.js';
 
 export default class DrawWork {
     constructor(width = 600, height = 400, id) {
@@ -12,6 +10,10 @@ export default class DrawWork {
         this.context = null;
         this.callback = null;
         this.animationId = null;
+        this.mouseX = 0;
+        this.mouseY = 0;
+        this.mouseIsPressed = false;
+        this.key = [];
 
         let c = null;
         if (id) {
@@ -25,6 +27,25 @@ export default class DrawWork {
         c.height = this.height;
         c.style.maxWidth = this.width;
         c.style.maxHeight = this.height;
+
+        this.canvas.addEventListener('mousemove', (e) => {
+            this.mouseX = e.pageX - e.target.offsetLeft;
+            this.mouseY = e.pageY - e.target.offsetTop;
+        });
+
+        this.canvas.addEventListener('mousedown', () => {
+            this.mouseIsPressed = true;
+        });
+
+        this.canvas.addEventListener('mouseup', () => {
+            this.mouseIsPressed = false;
+        });
+
+        this.canvas.addEventListener('keyup', (e) => {
+            if(this.key.length < 10) {
+                this.key.push(e.key);
+            }
+        });
     }
 
     draw(callback) {
@@ -111,6 +132,29 @@ export default class DrawWork {
         this.context.fillRect(x, y, width, height);
     }
 
+    renderRect(shape, color, strokeColor = null) {
+        const { x, y, width, height } = shape;
+        if (!strokeColor) {
+            this.fillRect(x, y, width, height, color);
+        } else {
+            this.strokedRect(x, y, width, height, color, strokeColor);
+        }
+    }
+
+    renderVectorRect(vectorShape, color, strokeColor = null) {
+        const {
+            pos: { x, y },
+            width,
+            height,
+        } = vectorShape;
+
+        this.renderRect(
+            { x: x, y: y, width: width, height: height },
+            color,
+            strokeColor
+        );
+    }
+
     rect(x, y, width, height, strokeColor = 'black') {
         this.context.strokeStyle = strokeColor;
         this.context.strokeRect(x, y, width, height);
@@ -129,12 +173,30 @@ export default class DrawWork {
         this.context.closePath();
     }
 
-    circle(x, y, radius, color = 'white') {
+    circle(x, y, radius, strokeColor = 'white') {
         this.context.beginPath();
-        this.context.strokeStyle = color;
+        this.context.strokeStyle = strokeColor;
         this.context.arc(x, y, radius, 0, 2 * Math.PI);
         this.context.stroke();
         this.context.closePath();
+    }
+
+    renderCircle(shape, color, strokeColor = null) {
+        const { x, y, radius } = shape;
+
+        if (!strokeColor) {
+            this.circle(x, y, radius, color);
+        } else {
+            this.strokedDot(x, y, radius, color, strokeColor);
+        }
+    }
+
+    renderVectorCirlce(vectorShape, color, strokeColor = null) {
+        const {
+            pos: { x, y },
+            radius,
+        } = vectorShape;
+        this.renderCircle({ x: x, y: y, radius: radius }, color, strokeColor);
     }
 
     strokedDot(x, y, radius, color = 'white', strokeColor = 'black') {
@@ -142,7 +204,7 @@ export default class DrawWork {
         this.circle(x, y, radius, strokeColor);
     }
 
-    backGround(red = 255, blue = 255, green = 255, alpha = 1.0) {
+    backGround(red = 255, green = 255, blue = 255, alpha = 1.0) {
         alpha = alpha < 0 || alpha > 1 ? 1.0 : alpha;
         const color = `rgba(${red},${green},${blue},${alpha})`;
         this.context.fillStyle = color;
@@ -293,13 +355,15 @@ export default class DrawWork {
     // statics methods
 
     static pickSmoothRandom(valueMax, valueMin = 0, interval = 3) {
-        const width = Math.floor(valueMin + Math.random() * (valueMax - valueMin));
+        const width = Math.floor(
+            valueMin + Math.random() * (valueMax - valueMin)
+        );
         return {
             next() {
                 const n = Math.floor(
                     width -
-            interval +
-            Math.random() * (width + interval - (width - interval))
+                        interval +
+                        Math.random() * (width + interval - (width - interval))
                 );
                 return n;
             },
@@ -328,5 +392,84 @@ export default class DrawWork {
         DOMElementFather.appendChild(canvas);
         canvas.id = id;
         return new DrawWork(width, height, id);
+    }
+
+    static createVector(x = 0, y = 0) {
+        return new Vector(x, y);
+    }
+}
+
+export class Shapes {
+    static rect(x, y, width, height) {
+        const obj = {};
+        obj.x = x;
+        obj.y = y;
+        obj.width = width;
+        obj.height = height;
+        obj.name = 'rect';
+        return obj;
+    }
+
+    static circle(x, y, radius) {
+        const obj = {};
+        obj.x = x;
+        obj.y = y;
+        obj.radius = radius;
+        obj.name = 'circle';
+
+        return obj;
+    }
+
+    static vectorCircle(x, y, radius) {
+        const obj = {};
+        obj.pos = new Vector(x, y);
+        obj.radius = radius;
+        obj.acc = new Vector();
+        obj.vel = new Vector();
+        obj.name = 'vectorCircle';
+
+        obj.applyForce = (force) => {
+            obj.acc.add(force);
+        };
+
+        obj.update = () => {
+            obj.vel.add(obj.acc);
+            obj.pos.add(obj.vel);
+            obj.acc.set(0, 0);
+        };
+
+        return obj;
+    }
+
+    static vectorRect(x, y, width, height) {
+        const obj = {};
+        obj.pos = new Vector(x, y);
+        obj.width = width;
+        obj.height = height;
+        obj.acc = new Vector();
+        obj.vel = new Vector();
+        obj.name = 'vectorCircle';
+
+        obj.applyForce = (force) => {
+            obj.acc.add(force);
+        };
+
+        obj.update = () => {
+            obj.vel.add(obj.acc);
+            obj.pos.add(obj.vel);
+            obj.acc.set(0, 0);
+        };
+
+        return obj;
+    }
+
+    static copy(shape) {
+        if (Shapes[shape.name] instanceof Function) {
+            const attrs = [];
+            for (const key in shape) {
+                attrs.push(shape[key]);
+            }
+            return Shapes[shape.name](...attrs);
+        }
     }
 }
