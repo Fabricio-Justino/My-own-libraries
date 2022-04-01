@@ -9,24 +9,22 @@ window.addEventListener('load', function load() {
 
     const $nav = Effects.$('nav.navigator');
 
-    //$nav.slideDown();
-
-    setTimeout(() => {
-        $nav.slideUp();
-    }, 2000);
+    Effects.$('#top').click(() => {
+        $nav.slideToggle();
+    }, true);
 });
 
 function canvasAnimation() {
     const $canvasDemostration = document.getElementById('canvas-demostration');
 
     const engine = DrawWork.createCanvas($canvasDemostration, null, null);
-   
+
     const { width, height } = engine;
 
     // cap vel and acc
     const circle = Shapes.vectorCircle(width / 2, 20, 20);
 
-    const gravity = new Vector(0, 0.1);
+    const gravity = new Vector(0, 0.9);
 
     // renderize objects using animationFrame
     engine.draw(loop);
@@ -62,14 +60,14 @@ function canvasAnimation() {
         if (y - r <= 0) {
             circle.pos.y = r;
             circle.vel.y *= -1;
-        } 
-
-        if(x + r >= width){
-            circle.pos.x = width-r;
-            circle.vel.x *= -1; 
         }
 
-        if(x - r <= 0) {
+        if (x + r >= width) {
+            circle.pos.x = width - r;
+            circle.vel.x *= -1;
+        }
+
+        if (x - r <= 0) {
             circle.pos.x = r;
             circle.vel.x *= -1;
         }
@@ -90,12 +88,13 @@ function canvasAnimation() {
     }
 
     //aplling wind force
-    function windForce({pos}) {
+    function windForce({ pos }) {
         const v = new Vector();
-        if(engine.mouseIsPressed) {
+        if (engine.mouseIsPressed) {
             const mousePos = new Vector(engine.mouseX, engine.mouseY);
             const pointer = Vector.sub(mousePos, pos);
-            pointer.setMag(1);
+            const mag = pointer.mag();
+            pointer.normalize().mult(mag * 0.009);
             v.add(pointer);
         }
 

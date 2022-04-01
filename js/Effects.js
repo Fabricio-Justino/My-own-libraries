@@ -1,68 +1,207 @@
 export default class Effects {
-    constructor(DOMElement) {
-        let $el = null;
-        if (DOMElement instanceof HTMLElement) {
-            $el = DOMElement;
-        } else {
-            $el = Effects.$(DOMElement).DOMElement;
-        }
-        this.DOMElement = $el;
+    constructor(DOMPointer) {
+        this.DOMElement = null;
 
-        this.__proto__.slideConfig = (el, duration) => {
-            el.style.overflow = 'hidden';
-            el.style.transition = `height ${duration}ms ease-in-out`;
+        this.__proto__.initializeDOMElement = () => {
+            let $el = null;
+            $el = document.querySelector(DOMPointer);
+            if ($el instanceof HTMLElement) {
+                this.DOMElement = $el;
+            }
         };
+
+        this.__proto__.initialConfiguration = () => {
+            this.initializeDOMElement();
+        };
+
+        // eslint-disable-next-line no-unused-vars
+        this.__proto__.slideConfig = (el, duration) => {
+            if (!el.classList.contains('effects-slide-setup')) {
+                el.classList.add('effects-slide-setup');
+                el.style.overflow = 'hidden';
+                //el.style.transition = `height ${duration}ms ease-in-out`;
+            }
+        };
+        this.initialConfiguration();
     }
 
-    /*slideUp(durationMilis = 500) {
+    // animation methods
+    slideUp(durationMilis = 500, callback = null) {
         let { DOMElement: el } = this;
-        el.style.height = 0;
         this.slideConfig(el, durationMilis);
 
-        el.addEventListener('transitionend', function end (e){
-            el.classList.toggle('active');
-            el.style.height = 'auto'
-            el.removeEventListener('transitionend', end);
-        });
+        if (el.classList.contains('effects-slide')) {
+            el.classList.remove('effects-slide');
+        }
+
+        //get css propertyValue
+        let elStyle = window.getComputedStyle(el);
+
+        //properties that i will change
+        let properties = [
+            'height',
+            'padding-top',
+            'padding-bottom',
+            'margin-top',
+            'margin-bottom',
+        ];
+
+        // parsing properties to numeric value - p = property
+        let elProperties = properties.map((p) => elStyle.getPropertyValue(p));
+        elProperties = elProperties.map((el) => parseFloat(el));
+
+        // gettimg the ration of duration of animation
+        let rationProperties = elProperties.map((el) => el / durationMilis);
+
+        let start;
+
+        let step = (timestamp) => {
+            if (!start) start = timestamp;
+
+            let frameCount = timestamp - start;
+            el.style.height =
+                elProperties[0] - rationProperties[0] * frameCount + 'px';
+            el.style.paddingTop =
+                elProperties[1] - rationProperties[1] * frameCount + 'px';
+            el.style.paddingBottom =
+                elProperties[2] - rationProperties[2] * frameCount + 'px';
+            el.style.marginTop =
+                elProperties[3] - rationProperties[3] * frameCount + 'px';
+            el.style.marginBottom =
+                elProperties[4] - rationProperties[4] * frameCount + 'px';
+
+            if (frameCount >= durationMilis) {
+                el.style.height = '';
+                el.style.paddingTop = '';
+                el.style.paddingBottom = '';
+                el.style.marginTop = '';
+                el.style.marginBottom = '';
+                el.style.display = 'none';
+                if (callback && callback instanceof Function) callback();
+            } else {
+                window.requestAnimationFrame(step);
+            }
+        };
+
+        window.requestAnimationFrame(step);
     }
 
-    slideDown(durationMilis = 500) {
+    slideDown(durationMilis = 500, callback = null) {
         let { DOMElement: el } = this;
-        el.style.display = 'block';
         this.slideConfig(el, durationMilis);
 
-        const height = el.clientHeight + 'px';
-        el.style.height = 0;
+        if (!el.classList.contains('effects-slide')) {
+            el.classList.add('effects-slide');
+            el.style.display = 'block';
+        }
 
-        setInterval(() => {
-            el.style.height = height;
-        }, 0);
-    }*/
+        //get css propertyValue
+        let elStyle = window.getComputedStyle(el);
 
-    slideDown(element = this.DOMElement) {
-        this.DOMElement.classList.toggle('active');
-        const height = element.clientHeight + 'px';
+        //properties that i will change
+        let properties = [
+            'height',
+            'padding-top',
+            'padding-bottom',
+            'margin-top',
+            'margin-bottom',
+        ];
 
-        element.style.height = 0;
+        // parsing properties to numeric value - p = property
+        let elProperties = properties.map((p) => elStyle.getPropertyValue(p));
+        elProperties = elProperties.map((el) => parseFloat(el));
 
-        window.setTimeout(() => {
-            element.style.height = height;
-        }, 0);
+        // gettimg the ration of duration of animation
+        let rationProperties = elProperties.map((el) => el / durationMilis);
+
+        let start;
+
+        let step = (timestamp) => {
+            if (!start) start = timestamp;
+
+            let frameCount = timestamp - start;
+            el.style.height = rationProperties[0] * frameCount + 'px';
+            el.style.paddingTop = rationProperties[1] * frameCount + 'px';
+            el.style.paddingBottom = rationProperties[2] * frameCount + 'px';
+            el.style.marginTop = rationProperties[3] * frameCount + 'px';
+            el.style.marginBottom = rationProperties[4] * frameCount + 'px';
+
+            if (frameCount >= durationMilis) {
+                el.style.height = '';
+                el.style.paddingTop = '';
+                el.style.paddingBottom = '';
+                el.style.marginTop = '';
+                el.style.marginBottom = '';
+                if (callback && callback instanceof Function) callback();
+            } else {
+                window.requestAnimationFrame(step);
+            }
+        };
+
+        window.requestAnimationFrame(step);
     }
 
-    slideUp(element = this.DOMElement) {
-        element.style.height = 0;
+    slideToggle(durationMilis = 500, callback = 500) {
+        let { DOMElement: el } = this;
+        if (!el.classList.contains('effects-slide')) {
+            this.slideDown(durationMilis, callback);
+        } else {
+            this.slideUp(durationMilis, callback);
+        }
+    }
 
-        element.addEventListener('transitionend', function end() {
-            element.classList.toggle('active');
-            element.style.height = 'auto';
-            element.removeEventListener('transitionend', end);
-        });
+    // event methods
+    click(handle, cursorPointer = false) {
+        if (handle instanceof Function) {
+            this.DOMElement.style.cursor = cursorPointer
+                ? 'pointer'
+                : 'initial';
+            this.DOMElement.addEventListener('click', handle);
+        } else {
+            return `it's not a function to handle`;
+        }
+    }
+
+    mouseMove(handle) {
+        if (handle instanceof Function) {
+            this.DOMElement.addEventListener('mousemove', handle);
+        }
+    }
+
+    load(handle) {
+        if (handle instanceof Function) {
+            this.DOMElement.addEventListener('load', handle);
+        }
+    }
+
+    keyDown(handle) {
+        if (handle instanceof Function) {
+            this.DOMElement.addEventListener('keydown', handle);
+        }
+    }
+
+    keyUp(handle) {
+        if (handle instanceof Function) {
+            this.DOMElement.addEventListener('keyup', handle);
+        }
+    }
+
+    keyPress(handle) {
+        if (handle instanceof Function) {
+            this.DOMElement.addEventListener('keypress', handle);
+        }
+    }
+
+    event(eventType, handle) {
+        if (handle instanceof Function) {
+            this.DOMElement.addEventListener(eventType, handle);
+        } else {
+            return `it's not a function to handle`;
+        }
     }
 
     //statics methods
     static $(DOMPointer) {
-        const DOMElement = document.querySelector(DOMPointer);
-        return new Effects(DOMElement);
+        return new Effects(DOMPointer);
     }
 }
