@@ -9,7 +9,7 @@ window.addEventListener('load', function load() {
 
     const $nav = Effects.$('nav.navigator');
 
-    Effects.$('#top').click(() => {
+    Effects.$('#slide-menu').click(() => {
         $nav.slideToggle();
     }, true);
 });
