@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>test of my libs</title>
+
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+
+      color: black;
+      text-decoration: none;
+    }
+
+    header {
+      display: flex;
+
+      align-items: center;
+      align-content: center;
+      justify-content: space-around;
+
+      background: royalblue;
+
+      max-width: 100vw;
+      width: 100%;
+      padding: 1px;
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+    }
+
+    #canvas-demostration {
+      width: 100%;
+      height: 400px;
+    }
+
+    section.accordion{
+      text-align: center;
+    }
+
+    .slide-accordion {
+      display: block;
+
+      text-align: center;
+
+      background-color: red;
+      border-radius: 5px 5px 5px 5px;
+      border: 1px solid black;
+      width: 50%;
+
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .slide-accordion-item {
+      display: none;
+      background-color: white;
+      cursor: default;
+    }
+
+    
+  </style>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h2>Test page</h2>
+    </div>
+    <div>
+      <nav class="navigator">
+        <a href="#">link sample</a>
+        <a href="#">link sample</a>
+        <a href="#">link sample</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="canvas-demostration"></section>
+    <section class="accordion">
+        <div class="slide-accordion">
+          <h2>accordion</h2>
+          <div class="slide-accordion-item">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam veniam dicta ex eveniet, impedit voluptate illo libero, dolorum, blanditiis ab quaerat. Et modi quidem consectetur doloremque officia sit eum ut.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam veniam dicta ex eveniet, impedit voluptate illo libero, dolorum, blanditiis ab quaerat. Et modi quidem consectetur doloremque officia sit eum ut.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam veniam dicta ex eveniet, impedit voluptate illo libero, dolorum, blanditiis ab quaerat. Et modi quidem consectetur doloremque officia sit eum ut.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam veniam dicta ex eveniet, impedit voluptate illo libero, dolorum, blanditiis ab quaerat. Et modi quidem consectetur doloremque officia sit eum ut.
+          </div>
+        </div>
+        <div class="slide-accordion">
+          <h2>accordion</h2>
+          <div class="slide-accordion-item">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam veniam dicta ex eveniet, impedit voluptate illo libero, dolorum, blanditiis ab quaerat. Et modi quidem consectetur doloremque officia sit eum ut.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam veniam dicta ex eveniet, impedit voluptate illo libero, dolorum, blanditiis ab quaerat. Et modi quidem consectetur doloremque officia sit eum ut.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam veniam dicta ex eveniet, impedit voluptate illo libero, dolorum, blanditiis ab quaerat. Et modi quidem consectetur doloremque officia sit eum ut.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam veniam dicta ex eveniet, impedit voluptate illo libero, dolorum, blanditiis ab quaerat. Et modi quidem consectetur doloremque officia sit eum ut.
+          </div>
+        </div>
+        <div class="slide-accordion">
+          <h2>accordion</h2>
+          <div class="slide-accordion-item">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam veniam dicta ex eveniet, impedit voluptate illo libero, dolorum, blanditiis ab quaerat. Et modi quidem consectetur doloremque officia sit eum ut.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam veniam dicta ex eveniet, impedit voluptate illo libero, dolorum, blanditiis ab quaerat. Et modi quidem consectetur doloremque officia sit eum ut.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam veniam dicta ex eveniet, impedit voluptate illo libero, dolorum, blanditiis ab quaerat. Et modi quidem consectetur doloremque officia sit eum ut.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam veniam dicta ex eveniet, impedit voluptate illo libero, dolorum, blanditiis ab quaerat. Et modi quidem consectetur doloremque officia sit eum ut.
+          </div>
+        </div>
+       
+    </section>
+  </main>
+
+  <script type="module" src="../js/index.js">
+
+  </script>
+</body>
+
+</html>

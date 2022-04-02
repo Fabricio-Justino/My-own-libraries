@@ -1,14 +1,21 @@
 export default class Effects {
     constructor(DOMPointer) {
         this.DOMElements = null;
+        this.stringSearch = null;
 
         this.__proto__.initializeDOMElements = () => {
-            let $els = document.querySelectorAll(DOMPointer);
-
-            let vali = true;
-            $els.forEach(($el) => (vali = vali && $el instanceof HTMLElement));
-            if (vali) {
-                this.DOMElements = $els;
+            if (DOMPointer instanceof HTMLElement) {
+                this.DOMElements = new Set().add(DOMPointer);             
+            } else {
+                let $els = document.querySelectorAll(DOMPointer);
+                let vali = true;
+                $els.forEach(
+                    ($el) => (vali = vali && $el instanceof HTMLElement)
+                );
+                if (vali) {
+                    this.DOMElements = $els;
+                }
+                this.stringSearch = DOMPointer;
             }
         };
 
@@ -223,6 +230,39 @@ export default class Effects {
         } else {
             return 'handle is not a function';
         }
+    }
+
+    // getters
+    getNode(index = 0) {
+        if (!(index >= this.DOMElements.length)) {
+            return this.DOMElements[index];
+        } else {
+            return 'index bounds array';
+        }
+    }
+
+    get(index = 0) {
+        return new Effects(this.getNode(index));
+    }
+
+    getChildren() {
+        return new Effects(this.stringSearch + ' > *');
+    }
+
+    getNodeChildren() {
+        return this.getChildren().getNodeList();
+    }
+
+    getFather(index = 0) {
+        return new Effects(this.DOMElements[index].parentNode);
+    }
+
+    getNodeList() {
+        return this.DOMElements;
+    }
+
+    getList() {
+        return [...this.DOMElements].map((el) => new Effects(el));
     }
 
     event(eventType, handle) {

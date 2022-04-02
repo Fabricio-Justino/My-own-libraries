@@ -7,10 +7,14 @@ import Effects from './Effects.js';
 window.addEventListener('load', function load() {
     canvasAnimation();
 
-    const $nav = Effects.$('nav.navigator');
-
-    Effects.$('#slide-menu').click(() => {
-        $nav.slideToggle();
+    const $itens = Effects.$('.slide-accordion-item');
+    Effects.$('.slide-accordion').click((e) => {
+        const node = e.target.parentNode;
+        $itens.getNodeList().forEach((el, index) => {
+            if (node === el.parentNode) {
+                $itens.get(index).slideToggle();
+            }
+        });
     }, true);
 });
 

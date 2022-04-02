@@ -4,6 +4,16 @@ export default class Vector {
         this.y = y;
         this.limitMax = 0;
         this.isLimited = false;
+
+        this.__proto__.validation = () => {
+            const vali1 = this.isLimited;
+            const m = Math.sqrt(this.x ** 2 + this.y ** 2);
+            const vali2 = m > this.limitMax;
+            if (vali1 && vali2) {
+                this.x = (this.x / m) * this.limitMax;
+                this.y = (this.y / m) * this.limitMax;
+            }
+        };
     }
 
     static create(x = 0, y = 0) {
@@ -190,15 +200,5 @@ export default class Vector {
     unlimit() {
         this.isLimited = false;
         this.limitMax = 0;
-    }
-
-    validation() {
-        const vali1 = this.isLimited;
-        const m = Math.sqrt(this.x ** 2 + this.y ** 2);
-        const vali2 = m > this.limitMax;
-        if (vali1 && vali2) {
-            this.x = (this.x / m) * this.limitMax;
-            this.y = (this.y / m) * this.limitMax;
-        }
     }
 }
