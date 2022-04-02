@@ -41,6 +41,11 @@ export default class Effects {
     }
 
     // animation methods
+    /** 
+    * this function slide up elements inside of effects node list
+    * @param {Number} duration in millisecond
+    * @param {Function} callback that will be call when the animation end
+    */
     slideUp(durationMilis = 500, callback = null) {
         let { DOMElements: els } = this;
         els.forEach((el) => {
@@ -105,6 +110,11 @@ export default class Effects {
         });
     }
 
+    /** 
+    * this function slide down elements inside of effects node list
+    * @param {Number} duration in millisecond
+    * @param {Function} callback that will be call when the animation end
+    */
     slideDown(durationMilis = 500, callback = null) {
         let { DOMElements: els } = this;
         els.forEach((el) => {
@@ -165,6 +175,12 @@ export default class Effects {
         });
     }
 
+    /** 
+    * this function slides down the elements inside the effect node list if
+    * they are slid up, otherwise, it slides up
+    * @param {Number} duration in millisecond
+    * @param {Function} callback that will be call when the animation end
+    */
     slideToggle(durationMilis = 500, callback = 500) {
         let { DOMElements: els } = this;
         els.forEach((el) => {
