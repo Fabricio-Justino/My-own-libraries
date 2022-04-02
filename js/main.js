@@ -20,6 +20,16 @@ window.addEventListener('load', function load() {
     Effects.$('#fade-test').click(() => {
         Effects.$('.fadeIn-image').fadeToggle();
     }, true);
+
+    const $dinamic = Effects.$('.dinamic-style');
+    $dinamic.getChildren().getList().forEach((el) => {
+        el.css({
+            'backgroundColor': el.attr('color'),
+            'paddingTop': '15px',
+            'paddingBottom': '15px', 
+            'textAlign': 'center',
+        });
+    });
 });
 
 function canvasAnimation() {

@@ -5,7 +5,7 @@ export default class Effects {
 
         this.__proto__.initializeDOMElements = () => {
             if (DOMPointer instanceof HTMLElement) {
-                this.DOMElements = new Set().add(DOMPointer);
+                this.DOMElements = [DOMPointer];
             } else {
                 let $els = document.querySelectorAll(DOMPointer);
                 let vali = true;
@@ -13,7 +13,7 @@ export default class Effects {
                     ($el) => (vali = vali && $el instanceof HTMLElement)
                 );
                 if (vali) {
-                    this.DOMElements = $els;
+                    this.DOMElements = [...$els];
                 }
                 this.stringSearch = DOMPointer;
             }
@@ -310,6 +310,16 @@ export default class Effects {
         }
     }
 
+    on(eventType, handle) {
+        if (handle instanceof Function) {
+            this.DOMElements.forEach((DOMElement) => {
+                DOMElement.addEventListener(eventType, handle);
+            });
+        } else {
+            return 'handle is not a function';
+        }
+    }
+
     // getters
     getNode(index = 0) {
         if (!(index >= this.DOMElements.length)) {
@@ -343,18 +353,98 @@ export default class Effects {
         return [...this.DOMElements].map((el) => new Effects(el));
     }
 
-    event(eventType, handle) {
-        if (handle instanceof Function) {
-            this.DOMElements.forEach((DOMElement) => {
-                DOMElement.addEventListener(eventType, handle);
-            });
+    //styles CSS
+    css(cssObject) {
+        let { DOMElements: els } = this;
+
+        els.forEach((el) => {
+            for (let key in cssObject) {
+                el.style[key] = cssObject[key];
+            }
+        });
+    }
+
+    addStyle(cssPropertyName, value) {
+        let { DOMElements: els } = this;
+
+        els.forEach((el) => {
+            el.styele[cssPropertyName] = value;
+        });
+    }
+
+    removeStyle(cssPropertyName) {
+        let { DOMElements: els } = this;
+
+        els.forEach((el) => {
+            el.style[cssPropertyName] = '';
+        });
+    }
+
+    // html manipulation
+    attrs(attrName) {
+        return [...this.getNodeList()].map((el) => el.getAttribute(attrName));
+    }
+
+    attr(attrName, index = 0) {
+        if (typeof index === 'number' && !(index >= this.DOMElements.length)) {
+            return this.getNode(index).getAttribute(attrName);
         } else {
-            return 'handle is not a function';
+            return 'index bounds array';
+        }
+    }
+
+    insertAttr(attrName, value, index = null) {
+        if (
+            index &&
+            typeof index === 'number' &&
+            index <= this.getNodeList().length
+        ) {
+            this.getNodeList()[index].setAttribute(attrName, value);
+        } else {
+            this.getNodeList().forEach((el) => {
+                el.setAttribute(attrName, value);
+            });
+        }
+        return attrName;
+    }
+
+    removeAttr(attrName, value, index = null) {
+        if (
+            index &&
+            typeof index === 'number' &&
+            index <= this.getNodeList().length
+        ) {
+            this.getNodeList()[index].removeAttribute(attrName, value);
+        } else {
+            this.getNodeList().forEach((el) => {
+                el.removeAttribute(attrName, value);
+            });
+        }
+    }
+
+    appendNode(nodeElement) {
+        if (nodeElement instanceof HTMLElement) {
+            this.getNodeList().forEach((el) => el.appendChild(nodeElement));
+            return nodeElement;
+        }
+    }
+
+    appendText(text) {
+        if (text instanceof String) {
+            this.getNodeList().forEach((el) => el.append(text));
         }
     }
 
     //statics methods
     static $(DOMPointer) {
         return new Effects(DOMPointer);
+    }
+
+    static createElement(elementType, parentNode = null) {
+        const $el = document.createElement(elementType);
+        if (parentNode && parentNode instanceof HTMLElement) {
+            parentNode.appendChild($el);
+        }
+        return new Effects($el);
     }
 }
