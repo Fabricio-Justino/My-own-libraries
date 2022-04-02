@@ -16,6 +16,10 @@ window.addEventListener('load', function load() {
             }
         });
     }, true);
+
+    Effects.$('#fade-test').click(() => {
+        Effects.$('.fadeIn-image').fadeToggle();
+    }, true);
 });
 
 function canvasAnimation() {

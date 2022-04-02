@@ -5,7 +5,7 @@ export default class Effects {
 
         this.__proto__.initializeDOMElements = () => {
             if (DOMPointer instanceof HTMLElement) {
-                this.DOMElements = new Set().add(DOMPointer);             
+                this.DOMElements = new Set().add(DOMPointer);
             } else {
                 let $els = document.querySelectorAll(DOMPointer);
                 let vali = true;
@@ -23,14 +23,20 @@ export default class Effects {
             this.initializeDOMElements();
         };
 
-        // eslint-disable-next-line no-unused-vars
-        this.__proto__.slideConfig = (el, duration) => {
+        this.__proto__.slideConfig = (el) => {
             if (!el.classList.contains('effects-slide-setup')) {
                 el.classList.add('effects-slide-setup');
                 el.style.overflow = 'hidden';
-                //el.style.transition = `height ${duration}ms ease-in-out`;
             }
         };
+
+        this.__proto__.fadeConfig = (el) => {
+            if (!el.classList.contains('effects-fade-setup')) {
+                el.classList.add('effects-fade-setup');
+                el.style.overflow = 'hidden';
+            }
+        };
+
         this.initialConfiguration();
     }
 
@@ -38,7 +44,7 @@ export default class Effects {
     slideUp(durationMilis = 500, callback = null) {
         let { DOMElements: els } = this;
         els.forEach((el) => {
-            this.slideConfig(el, durationMilis);
+            this.slideConfig(el);
 
             if (el.classList.contains('effects-slide')) {
                 el.classList.remove('effects-slide');
@@ -102,7 +108,7 @@ export default class Effects {
     slideDown(durationMilis = 500, callback = null) {
         let { DOMElements: els } = this;
         els.forEach((el) => {
-            this.slideConfig(el, durationMilis);
+            this.slideConfig(el);
 
             if (!el.classList.contains('effects-slide')) {
                 el.classList.add('effects-slide');
@@ -166,6 +172,78 @@ export default class Effects {
                 this.slideDown(durationMilis, callback);
             } else {
                 this.slideUp(durationMilis, callback);
+            }
+        });
+    }
+
+    fadeIn(durationMilis = 500, callback = null) {
+        const { DOMElements: els } = this;
+        els.forEach((el) => {
+            this.fadeConfig(el);
+            if (!el.classList.contains('effects-fade')) {
+                el.classList.add('effects-fade');
+            }
+
+            const opacityRation = 1 / durationMilis;
+            let start;
+            const step = (timestamp) => {
+                if (!start) {
+                    start = timestamp;
+                    el.style.display = 'block';
+                    el.style.opacity = 0;
+                }
+
+                const frameCount = timestamp - start;
+                el.style.opacity = String(opacityRation * frameCount);
+                if (frameCount >= durationMilis) {
+                    el.style.opacity = '';
+                    if (callback && callback instanceof Function) callback();
+                } else {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        });
+    }
+
+    fadeOut(durationMilis = 500, callback = null) {
+        const { DOMElements: els } = this;
+        els.forEach((el) => {
+            this.fadeConfig(el);
+            if (el.classList.contains('effects-fade')) {
+                el.classList.remove('effects-fade');
+            }
+
+            const opacityRation = 1 / durationMilis;
+            let start;
+            const step = (timestamp) => {
+                if (!start) {
+                    start = timestamp;
+                    el.style.display = 'block';
+                    el.style.opacity = 0;
+                }
+
+                const frameCount = timestamp - start;
+                el.style.opacity = String(1 - opacityRation * frameCount);
+                if (frameCount >= durationMilis) {
+                    el.style.opacity = '';
+                    el.style.display = 'none';
+                    if (callback && callback instanceof Function) callback();
+                } else {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        });
+    }
+
+    fadeToggle(durationMilis = 500, callback = null) {
+        let { DOMElements: els } = this;
+        els.forEach((el) => {
+            if (!el.classList.contains('effects-fade')) {
+                this.fadeIn(durationMilis, callback);
+            } else {
+                this.fadeOut(durationMilis, callback);
             }
         });
     }
