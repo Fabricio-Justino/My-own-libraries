@@ -6,7 +6,6 @@ import Effects from './Effects.js';
 //initialize DOMS elements
 window.addEventListener('load', function load() {
     canvasAnimation();
-
     const $itens = Effects.$('.slide-accordion-item');
     Effects.$('.slide-accordion').click((e) => {
         const node = e.target.parentNode;
