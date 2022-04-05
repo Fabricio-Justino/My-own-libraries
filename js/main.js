@@ -123,7 +123,10 @@ function canvasAnimation() {
     function windForce({ pos }) {
         const v = PaperSheet.createVector();
         if (engine.mouseIsPressed) {
-            const mousePos = PaperSheet.createVector(engine.mouseX, engine.mouseY);
+            const mousePos = PaperSheet.createVector(
+                engine.mouseX,
+                engine.mouseY
+            );
             const pointer = PaperSheet.Vector.sub(mousePos, pos);
             const mag = pointer.mag();
             pointer.normalize().mult(mag * 0.009);
