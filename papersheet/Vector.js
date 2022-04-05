@@ -16,10 +16,6 @@ export default class Vector {
         };
     }
 
-    static create(x = 0, y = 0) {
-        return new Vector(x, y);
-    }
-
     static toDegree(radian) {
         return (radian * 180) / Math.PI;
     }
@@ -31,7 +27,7 @@ export default class Vector {
     static midlePoint(vector) {
         return new Vector(vector.x / 2, vector.y / 2);
     }
-
+    
     static add(v, v2) {
         let temp = new Vector();
         temp.x = v.x + v2.x;
@@ -76,6 +72,10 @@ export default class Vector {
         const v = new Vector(1, 0);
         v.setHeading(radian);
         return v;
+    }
+
+    static createVector(x = 0, y = 0) {
+        return new Vector(x, y);
     }
 
     midlePoint() {

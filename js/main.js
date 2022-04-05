@@ -1,11 +1,8 @@
-import DrawWork from './DrawWork.js';
-import { Shapes } from './DrawWork.js';
-import Vector from './Vector.js';
-import Effects from './Effects.js';
+import Effects from '../domquery/Effects.js';
+import PaperSheet from '../papersheet/PaperSheet.js';
 
 //initialize DOMS elements
 window.addEventListener('load', function load() {
-    canvasAnimation();
     const $itens = Effects.$('.slide-accordion-item');
     Effects.$('.slide-accordion').click((e) => {
         const node = e.target.parentNode;
@@ -21,27 +18,45 @@ window.addEventListener('load', function load() {
     }, true);
 
     const $dinamic = Effects.$('.dinamic-style');
-    $dinamic.getChildren().getList().forEach((el) => {
-        el.css({
-            'backgroundColor': el.attr('color'),
-            'paddingTop': '15px',
-            'paddingBottom': '15px', 
-            'textAlign': 'center',
+    $dinamic
+        .getChildren()
+        .getList()
+        .forEach((el) => {
+            el.css({
+                backgroundColor: el.attr('color'),
+                paddingTop: '15px',
+                paddingBottom: '15px',
+                textAlign: 'center',
+                color: 'white',
+                width: '50%',
+                position: 'relative',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                border: '1px dashed black',
+                marginTop: '5px',
+            });
         });
-    });
+    try {
+        canvasAnimation();
+    } catch (e) {
+        console.error(e);
+    }
 });
 
 function canvasAnimation() {
     const $canvasDemostration = document.getElementById('canvas-demostration');
 
-    const engine = DrawWork.createCanvas($canvasDemostration, null, null);
+    const engine = PaperSheet.createCanvas(
+        $canvasDemostration,
+        null,
+        null
+    ).pencil;
 
     const { width, height } = engine;
 
-    // cap vel and acc
-    const circle = Shapes.vectorCircle(width / 2, 20, 20);
+    const circle = PaperSheet.VectorShapes.circle(width / 2, 20, 20);
 
-    const gravity = new Vector(0, 0.9);
+    const gravity = new PaperSheet.Vector(0, 0.9);
 
     // renderize objects using animationFrame
     engine.draw(loop);
@@ -106,10 +121,10 @@ function canvasAnimation() {
 
     //aplling wind force
     function windForce({ pos }) {
-        const v = new Vector();
+        const v = new PaperSheet.Vector();
         if (engine.mouseIsPressed) {
-            const mousePos = new Vector(engine.mouseX, engine.mouseY);
-            const pointer = Vector.sub(mousePos, pos);
+            const mousePos = new PaperSheet.Vector(engine.mouseX, engine.mouseY);
+            const pointer = PaperSheet.Vector.sub(mousePos, pos);
             const mag = pointer.mag();
             pointer.normalize().mult(mag * 0.009);
             v.add(pointer);

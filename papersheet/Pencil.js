@@ -1,6 +1,4 @@
-import Vector from './Vector.js';
-
-export default class DrawWork {
+export default class Pencil {
     constructor(width = 600, height = 400, id) {
         this.width = width;
         this.height = height;
@@ -21,6 +19,7 @@ export default class DrawWork {
         } else {
             c = document.querySelector('canvas');
         }
+
         this.canvas = c;
         this.context = c.getContext('2d');
         c.width = this.width;
@@ -43,6 +42,9 @@ export default class DrawWork {
 
         this.canvas.addEventListener('keyup', (e) => {
             if(this.key.length < 10) {
+                this.key.push(e.key);
+            } else {
+                this.key.shift();
                 this.key.push(e.key);
             }
         });
@@ -350,126 +352,5 @@ export default class DrawWork {
 
     endScale() {
         this.context.resetTransform();
-    }
-
-    // statics methods
-
-    static pickSmoothRandom(valueMax, valueMin = 0, interval = 3) {
-        const width = Math.floor(
-            valueMin + Math.random() * (valueMax - valueMin)
-        );
-        return {
-            next() {
-                const n = Math.floor(
-                    width -
-                        interval +
-                        Math.random() * (width + interval - (width - interval))
-                );
-                return n;
-            },
-        };
-    }
-
-    static random(minValue, MaxValue) {
-        return Math.floor(minValue + Math.random() * (MaxValue - minValue));
-    }
-
-    static create(width = 600, height = 400, id) {
-        return new DrawWork(width, height, id);
-    }
-
-    static createCanvas(DOMElementFather, width, height, id = 'canvas') {
-        if (!DOMElementFather) {
-            DOMElementFather = document.querySelector('body');
-        }
-
-        if (!width && !height) {
-            width = DOMElementFather.clientWidth;
-            height = DOMElementFather.clientHeight;
-        }
-
-        const canvas = document.createElement('canvas');
-        DOMElementFather.appendChild(canvas);
-        canvas.id = id;
-        return new DrawWork(width, height, id);
-    }
-
-    static createVector(x = 0, y = 0) {
-        return new Vector(x, y);
-    }
-}
-
-export class Shapes {
-    static rect(x, y, width, height) {
-        const obj = {};
-        obj.x = x;
-        obj.y = y;
-        obj.width = width;
-        obj.height = height;
-        obj.name = 'rect';
-        return obj;
-    }
-
-    static circle(x, y, radius) {
-        const obj = {};
-        obj.x = x;
-        obj.y = y;
-        obj.radius = radius;
-        obj.name = 'circle';
-
-        return obj;
-    }
-
-    static vectorCircle(x, y, radius) {
-        const obj = {};
-        obj.pos = new Vector(x, y);
-        obj.radius = radius;
-        obj.acc = new Vector();
-        obj.vel = new Vector();
-        obj.name = 'vectorCircle';
-
-        obj.applyForce = (force) => {
-            obj.acc.add(force);
-        };
-
-        obj.update = () => {
-            obj.vel.add(obj.acc);
-            obj.pos.add(obj.vel);
-            obj.acc.set(0, 0);
-        };
-
-        return obj;
-    }
-
-    static vectorRect(x, y, width, height) {
-        const obj = {};
-        obj.pos = new Vector(x, y);
-        obj.width = width;
-        obj.height = height;
-        obj.acc = new Vector();
-        obj.vel = new Vector();
-        obj.name = 'vectorCircle';
-
-        obj.applyForce = (force) => {
-            obj.acc.add(force);
-        };
-
-        obj.update = () => {
-            obj.vel.add(obj.acc);
-            obj.pos.add(obj.vel);
-            obj.acc.set(0, 0);
-        };
-
-        return obj;
-    }
-
-    static copy(shape) {
-        if (Shapes[shape.name] instanceof Function) {
-            const attrs = [];
-            for (const key in shape) {
-                attrs.push(shape[key]);
-            }
-            return Shapes[shape.name](...attrs);
-        }
     }
 }
