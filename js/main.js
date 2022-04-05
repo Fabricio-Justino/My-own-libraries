@@ -56,7 +56,7 @@ function canvasAnimation() {
 
     const circle = PaperSheet.VectorShapes.circle(width / 2, 20, 20);
 
-    const gravity = new PaperSheet.Vector(0, 0.9);
+    const gravity = PaperSheet.createVector(0, 0.9);
 
     // renderize objects using animationFrame
     engine.draw(loop);
@@ -121,9 +121,9 @@ function canvasAnimation() {
 
     //aplling wind force
     function windForce({ pos }) {
-        const v = new PaperSheet.Vector();
+        const v = PaperSheet.createVector();
         if (engine.mouseIsPressed) {
-            const mousePos = new PaperSheet.Vector(engine.mouseX, engine.mouseY);
+            const mousePos = PaperSheet.createVector(engine.mouseX, engine.mouseY);
             const pointer = PaperSheet.Vector.sub(mousePos, pos);
             const mag = pointer.mag();
             pointer.normalize().mult(mag * 0.009);
