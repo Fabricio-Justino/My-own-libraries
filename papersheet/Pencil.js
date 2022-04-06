@@ -40,8 +40,24 @@ export default class Pencil {
             this.mouseIsPressed = false;
         });
 
+        this.canvas.addEventListener('touchstart', (e) => {
+            this.mouseIsPressed = true;
+            e.preventDefault();
+        });
+
+        this.canvas.addEventListener('touchend', (e) => {
+            this.mouseIsPressed = false;
+            e.preventDefault();
+        });
+
+        this.canvas.addEventListener('touchmove', (e) => {
+            this.mouseX = e.touches[0].pageX - e.target.offsetLeft;
+            this.mouseY = e.touches[0].pageY - e.target.offsetTop;
+            e.preventDefault();
+        });
+
         this.canvas.addEventListener('keyup', (e) => {
-            if(this.key.length < 10) {
+            if (this.key.length < 10) {
                 this.key.push(e.key);
             } else {
                 this.key.shift();

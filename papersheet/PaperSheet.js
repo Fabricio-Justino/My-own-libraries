@@ -5,8 +5,10 @@ import VectorShapes from './VectorShapes.js';
 
 export default class PaperSheet {
     static Vector = Vector;
-    static Shapes = Shapes;
+
+    static Shape = new Shapes();
     static VectorShapes = new VectorShapes(Vector);
+
     constructor(width = 600, height = 400, canvasId) {
         this.pencil = new Pencil(width, height, canvasId);
     }

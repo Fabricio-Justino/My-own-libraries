@@ -34,8 +34,27 @@ window.addEventListener('load', function load() {
                 transform: 'translateX(-50%)',
                 border: '1px dashed black',
                 marginTop: '5px',
+                textTransform: 'capitalize',
             });
         });
+
+    const $dragZones = Effects.$('.drag-zone');
+    const $dragItens = Effects.$('.drag-item');
+
+    const cssAvaliableDragsZones = {
+        backgroundColor: 'rgb(142, 138, 106)',
+        transition: '0.5s'
+    };
+
+    const cssEndDrag ={
+        backgroundColor: 'rgb(142, 128, 106)',
+    };
+    const cssStyleEnter = {
+        backgroundColor: 'rgba(0, 200, 0, 0.4)'
+    };
+
+    $dragItens.drag($dragZones, cssAvaliableDragsZones, cssEndDrag, cssStyleEnter, cssAvaliableDragsZones);
+
     try {
         canvasAnimation();
     } catch (e) {
@@ -46,12 +65,9 @@ window.addEventListener('load', function load() {
 function canvasAnimation() {
     const $canvasDemostration = document.getElementById('canvas-demostration');
 
-    const engine = PaperSheet.createCanvas(
-        $canvasDemostration,
-        null,
-        null
-    ).pencil;
+    const paper = PaperSheet.createCanvas($canvasDemostration, null, null);
 
+    const engine = paper.pencil;
     const { width, height } = engine;
 
     const circle = PaperSheet.VectorShapes.circle(width / 2, 20, 20);

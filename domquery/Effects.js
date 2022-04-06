@@ -395,6 +395,56 @@ export default class Effects {
     }
 
     /**
+     * this function allows you to drop an item in a drop zone, assigning style to every single event.
+     * alert: when a CSS style is placed others need to be placed too
+     * 
+     * @param {Effects} dropZones place where will be dropped the drag item
+     * @param {Object} cssAvaliableDragZone [optional] the css style that will be placed in the dropZone
+     * @param {Object} cssEndDrag [optional] the css style that will be placed in the dropZone when the item be dropped
+     * @param {Object} cssStyleEnter [optional] the css style that will be placed in the dropZone when the item enter in dropZone
+     * @param {Object} cssStyleLeave [optional] the css style that will be placed in the dropZone when the item leave dropZone
+     */
+    drag(
+        dropZones,
+        cssAvaliableDragZone = null,
+        cssEndDrag = null,
+        cssStyleEnter = null,
+        cssStyleLeave = null
+    ) {
+        if (dropZones instanceof Effects) {
+            this.insertAttr('draggable', 'true');
+            let $item = null;
+
+            
+            dropZones.on('dragenter', function () {
+                if (cssStyleEnter) {
+                    Effects.$(this).css(cssStyleEnter);
+                }
+                this.appendChild($item);
+            });
+
+            if (cssStyleLeave) {
+                dropZones.on('dragleave', function () {
+                    Effects.$(this).css(cssStyleLeave);
+                });
+            }
+
+            if (cssEndDrag) {
+                this.on('dragend', function () {
+                    dropZones.css(cssEndDrag);
+                });
+            }
+
+            this.on('dragstart', function () {
+                if (cssAvaliableDragZone) {
+                    dropZones.css(cssAvaliableDragZone);
+                }
+                $item = this;
+            });
+        }
+    }
+
+    /**
      * @param {Function} handle an fucntion to handle with event
      * @param {String} eventType type of event sample "click"
      * @return {Effects} if handle is a fuction return Effects class again to chainig
@@ -526,7 +576,7 @@ export default class Effects {
     }
 
     /**
-     * 
+     *
      * @param {String} cssPropertyName css property sample 'color'
      * @param {String} value css value sample 'red'
      * @example Effects.$('*').addStyle('color', 'red');
@@ -540,7 +590,7 @@ export default class Effects {
     }
 
     /**
-     *  
+     *
      * @param {String} cssPropertyName name of css property sample 'color'
      */
     removeStyle(cssPropertyName) {
@@ -563,7 +613,7 @@ export default class Effects {
             return 'index bounds array';
         }
     }
-    
+
     insertAttr(attrName, value, index = null) {
         if (
             index &&
