@@ -5,7 +5,7 @@
 - manipular o DOM mais facilmente
 - aprender como inserir propriedade css com javascript
 - aprender sobre eventos
-- aprender sobre composição de função e programação funcional
+- aprender sobre composição de função e programação funcional (eu estou usando a abstração: orientado a objeto)
 - aprender como grandes blibiotecas funcionam por de trás dos panos
 
 ## Dificuldade
