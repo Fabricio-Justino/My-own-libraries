@@ -75,6 +75,7 @@ export default class Effects {
             let elProperties = properties.map((p) =>
                 elStyle.getPropertyValue(p)
             );
+
             elProperties = elProperties.map((el) => parseFloat(el));
 
             // gettimg the ration of duration of animation
@@ -104,7 +105,8 @@ export default class Effects {
                     el.style.marginTop = '';
                     el.style.marginBottom = '';
                     el.style.display = 'none';
-                    if (callback && callback instanceof Function) callback();
+                    if (callback && callback instanceof Function)
+                        callback(this);
                 } else {
                     window.requestAnimationFrame(step);
                 }
@@ -169,7 +171,8 @@ export default class Effects {
                     el.style.paddingBottom = '';
                     el.style.marginTop = '';
                     el.style.marginBottom = '';
-                    if (callback && callback instanceof Function) callback();
+                    if (callback && callback instanceof Function)
+                        callback(this);
                 } else {
                     window.requestAnimationFrame(step);
                 }
@@ -222,7 +225,8 @@ export default class Effects {
                 el.style.opacity = String(opacityRation * frameCount);
                 if (frameCount >= durationMilis) {
                     el.style.opacity = '';
-                    if (callback && callback instanceof Function) callback();
+                    if (callback && callback instanceof Function)
+                        callback(this);
                 } else {
                     window.requestAnimationFrame(step);
                 }
@@ -258,7 +262,8 @@ export default class Effects {
                 if (frameCount >= durationMilis) {
                     el.style.opacity = '';
                     el.style.display = 'none';
-                    if (callback && callback instanceof Function) callback();
+                    if (callback && callback instanceof Function)
+                        callback(this);
                 } else {
                     window.requestAnimationFrame(step);
                 }
@@ -397,7 +402,7 @@ export default class Effects {
     /**
      * this function allows you to drop an item in a drop zone, assigning style to every single event.
      * alert: when a CSS style is placed others need to be placed too
-     * 
+     *
      * @param {Effects} dropZones place where will be dropped the drag item
      * @param {Object} cssAvaliableDragZone [optional] the css style that will be placed in the dropZone
      * @param {Object} cssEndDrag [optional] the css style that will be placed in the dropZone when the item be dropped
@@ -415,7 +420,6 @@ export default class Effects {
             this.insertAttr('draggable', 'true');
             let $item = null;
 
-            
             dropZones.on('dragenter', function () {
                 if (cssStyleEnter) {
                     Effects.$(this).css(cssStyleEnter);
@@ -465,6 +469,14 @@ export default class Effects {
     }
 
     // getters
+
+    /**
+     * @returns {Number} number of elements inside Effects list
+     */
+    size() {
+        return this.DOMElements.length;
+    }
+
     /**
      *
      * @param {Number} index Ellement into of index of Effects Node List
@@ -618,7 +630,8 @@ export default class Effects {
         if (
             index &&
             typeof index === 'number' &&
-            index <= this.getNodeList().length
+            index <= this.getNodeList().length &&
+            index >= 0
         ) {
             this.getNodeList()[index].setAttribute(attrName, value);
         } else {
@@ -654,6 +667,86 @@ export default class Effects {
         if (text instanceof String) {
             this.getNodeList().forEach((el) => el.append(text));
         }
+    }
+
+    //Scrools
+
+    scroll(index = 0) {
+        if (typeof index == 'number') {
+            const { scrollLeft, scrollTop } = this.DOMElements[index];
+
+            const scrollObject = {
+                top: scrollTop,
+                left: scrollLeft,
+            };
+
+            return scrollObject;
+        }
+    }
+
+    setScrollLeft(value, index = 0) {
+        if (typeof value == 'number' && typeof index == 'number') {
+            this.DOMElements[index].scrollLeft = value;
+        }
+    }
+
+    setScrollTop(value, index = 0) {
+        if (typeof value == 'number' && typeof index == 'number') {
+            this.DOMElements[index].scrolTop = value;
+        }
+    }
+
+    increaseScrollLeft(value, index = 0) {
+        if (typeof value == 'number' && typeof index == 'number') {
+            this.DOMElements[index].scrollLeft += value;
+        }
+    }
+
+    increaseScrollTop(value, index = 0) {
+        if (typeof value == 'number' && typeof index == 'number') {
+            this.DOMElements[index].scrollTop += value;
+        }
+    }
+
+    smoothScrollLeft(valueToScroll, durationMilis = 500, callback, index = 0) {
+        let start;
+        let initialScroll;
+        const step = (timestamp) => {
+            if (!start) {
+                start = timestamp;
+                initialScroll = this.scroll(index).left;
+            }
+
+            const frame = timestamp - start;
+
+            const POINTER_TO = valueToScroll - initialScroll;
+            const SCROLL_TO =
+                (POINTER_TO / durationMilis) * frame + initialScroll;
+
+            this.setScrollLeft(SCROLL_TO);
+
+            if (frame <= durationMilis) {
+                window.requestAnimationFrame(step);
+            } else {
+                this.setScrollLeft(valueToScroll);
+                if (callback instanceof Function) callback(this);
+            }
+        };
+
+        window.requestAnimationFrame(step);
+    }
+
+    // ofSets
+
+    ofset(index = 0) {
+        const { offsetLeft, offsetTop } = this.DOMElements[index];
+
+        const ofsetObject = {
+            left: offsetLeft,
+            top: offsetTop,
+        };
+
+        return ofsetObject;
     }
 
     //statics methods
